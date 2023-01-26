@@ -1,24 +1,51 @@
-import paramiko
+from telegram.ext import Application, CommandHandler, JobQueue
+from datetime import time
+import pytz
 import os 
+import logging
 from dotenv import load_dotenv
-
+import utils
 load_dotenv()
 
-host = os.getenv('host')
-port = os.getenv('port')
-user = os.getenv('usernameh')
-password = os.getenv('password')
+
+token = os.getenv('tlgtoken')
+def truncated_msg(text):
+    if len(text) >= 4000:
+        result = f"{text[:4000]}...\n \n"
+        result += f"MESSAGE TRUNCATED DUE TO TELEGRAM MAX MESSAGE LENGTH"
+        return result
+    else:
+        return text
 
 
-transport = paramiko.Transport((os.getenv('host'),int(os.getenv('port'))))
+async def start(update,context):
+    """Gives a hearty salutation"""
+    user = update.effective_user
+    await update.message.reply_text(f"Greetings {user.username} !")
+    
+    
+async def chatId(update,context):
+    """Returns the chat id where the bot responds to"""
+    chatId = update.message.chat.id
+    await update.message.reply_text(chatId)
+    
+async def checking_vm(update, context):
+  vm = utils.check_vm()
+  if vm != None:
+    await context.bot.send_message(
+      chatId = os.getenv('chatReport'),
+      text = vm
+    )
 
-
-transport.connect(username=os.getenv('usernameh'), password=os.getenv('password'))
-sftp = paramiko.SFTPClient.from_transport(transport)
-
-test = sftp.listdir('/var/spool/asterisk/voicemail/default/7599/INBOX')
-
-sftp.close()
-transport.close()
-
-print(test)
+def main():
+    """Start the bot"""
+    application = Application.builder().token(token).build()
+    logging.basicConfig(format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+    application.add_handler(CommandHandler('chat_id', chatId))
+    application.add_handler(CommandHandler('start', start))
+    application.job_queue.run_repeating(checking_vm, interval=900, first = time(hour=6, minute=50, second=0, tzinfo=pytz.timezone('US/Eastern')), last= time(hour=19, minute=0, second=0, tzinfo=pytz.timezone('US/Eastern')))
+    print('Bot started')
+    application.run_polling()
+    
+if __name__ == "__main__":
+  main()
