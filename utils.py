@@ -6,18 +6,6 @@ from pathlib import Path
 
 load_dotenv()
 
-# def connectDb():
-#   try:
-#     mydb = mysql.connector.connect(
-#       host = os.getenv('dbhost'),
-#       user = os.getenv('userdb'),
-#       password ='',
-#       database = os.getenv('dbname'),
-#       auth_plugin = "mysql_native_password"
-#     )
-#     return mydb
-#   except OSError:
-#     return OSError
 
 
 def searchs_vm():
@@ -33,6 +21,34 @@ def searchs_vm():
 
 def is_audio(msj):
   return msj if msj.endswith('.wav') else False
+
+
+
+def check_vm():
+  vmlist = searchs_vm()
+  print(vmlist)
+  vmlist = list(filter(is_audio,vmlist))
+  if len(vmlist) != 0:
+    msj = f"URGENT: Hi team we have {len(vmlist)} new message(s).\nPlease review them as soon as possible."
+    return msj
+  else:
+    return None
+  
+ #------Function to work with DB in the future---------------
+
+# def connectDb():
+#   try:
+#     mydb = mysql.connector.connect(
+#       host = os.getenv('dbhost'),
+#       user = os.getenv('userdb'),
+#       password ='',
+#       database = os.getenv('dbname'),
+#       auth_plugin = "mysql_native_password"
+#     )
+#     return mydb
+#   except OSError:
+#     return OSError
+
 
 # def not_in_the_list(x,list):
 #   return x not in list
@@ -50,17 +66,3 @@ def is_audio(msj):
 #   return len(vmnews)
     
      
-
-def check_vm():
-  vmlist = searchs_vm()
-  print(vmlist)
-  vmlist = list(filter(is_audio,vmlist))
-  if len(vmlist) != 0:
-    msj = f"URGENT: Hi team we have {len(vmlist)} new message(s).\nPlease review them as soon as possible."
-    return msj
-  else:
-    return None
- 
-
-
-

@@ -1,6 +1,7 @@
 *.conf
 *.pdf
 __pycache__
+__pycache__/
 venv
 venv/
 *.env
