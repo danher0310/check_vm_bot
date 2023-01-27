@@ -9,6 +9,10 @@ load_dotenv()
 
 
 token = os.getenv('tlgtoken')
+# chat_ids = list(os.getenv('chats').split(','))
+# for chatId in  chat_ids:
+#   print(chatId)
+
 def truncated_msg(text):
     if len(text) >= 4000:
         result = f"{text[:4000]}...\n \n"
@@ -29,13 +33,16 @@ async def chatId(update,context):
     chatId = update.message.chat.id
     await update.message.reply_text(chatId)
     
-async def checking_vm(update, context):
+async def checking_vm(context):
   vm = utils.check_vm()
   if vm != None:
-    await context.bot.send_message(
-      chatId = os.getenv('chatReport'),
-      text = vm
-    )
+    chat_ids = list(os.getenv('chats').split(','))
+    for chatId in  chat_ids:      
+      await context.bot.send_message(       
+        chat_id = chatId,
+        text = vm
+      )
+    
 
 def main():
     """Start the bot"""
@@ -43,7 +50,7 @@ def main():
     logging.basicConfig(format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     application.add_handler(CommandHandler('chat_id', chatId))
     application.add_handler(CommandHandler('start', start))
-    application.job_queue.run_repeating(checking_vm, interval=900, first = time(hour=6, minute=50, second=0, tzinfo=pytz.timezone('US/Eastern')), last= time(hour=19, minute=0, second=0, tzinfo=pytz.timezone('US/Eastern')))
+    application.job_queue.run_repeating(checking_vm, interval=900, first = time(hour=6, minute=50, second=0, tzinfo=pytz.timezone('US/Eastern')), last= time(hour=17, minute=00, second=0, tzinfo=pytz.timezone('US/Eastern')))
     print('Bot started')
     application.run_polling()
     
