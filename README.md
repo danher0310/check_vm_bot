@@ -1,1 +1,1 @@
-![pythonbot.jpg](:/6db292e9376e488e8d155781f3603786)
+https://github.com/danher0310/check_vm_bot/blob/main/img/pythonbot.jpg
