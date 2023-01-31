@@ -29,19 +29,15 @@ def check_vm():
   print(vmlist)
   vmlist = list(filter(is_audio,vmlist))
   
-  if len(vmlist) != 0:  
+  if len(vmlist) > 0:  
     msj = check_database(len(vmlist))    
     return msj if msj!= None else None
-    
-      
-      
-    
-  #   msj = f"URGENT: Hi team we have {len(vmlist)} new message(s).\nPlease review them as soon as possible."
-  #   return msj
-  # else:
-  #   return None
   
- #------Function to work with DB in the future---------------
+  else: 
+    refreshDb()
+
+ 
+
 
 def connectDb():
   try:
@@ -57,13 +53,22 @@ def connectDb():
     return OSError
 
 
+    
+def refreshDb():
+  mydb = connectDb()
+  myCursor = mydb.cursor()
+  myCursor.execute("TRUNCATE voice_mail;")
+  mydb.close()
+  
+   
+ 
+
+
 def not_in_the_list(x,list):
   return x not in list
 
 def check_database(lenvm):
-  mydb = connectDb()
-   
-  
+  mydb = connectDb()  
   myCursor = mydb.cursor()
   myCursor.execute("SELECT TIMESTAMPDIFF(hour, dateregister, current_timestamp())  as timediff from voice_mail where numberVm = %s  and (TIMESTAMPDIFF(hour, dateregister, current_timestamp()) >= 1 or  TIMESTAMPDIFF(hour, dateregister, current_timestamp()) <= 1) and TIMESTAMPDIFF(day, dateregister, current_timestamp()) <1   order by timediff ASC ;",(lenvm,))
   result = myCursor.fetchone()    
@@ -79,6 +84,7 @@ def check_database(lenvm):
         return f"URGENT: Hi team we have {lenvm} new message(s), it has {x} hour in the voicemail.\nPlease review them as soon as possible."
       else:
         return None
+  mydb.close()
     
    
   
@@ -92,4 +98,3 @@ def check_database(lenvm):
   
   
   
-print(check_vm(4))
