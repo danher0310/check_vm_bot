@@ -1,4 +1,4 @@
-from telegram.ext import Application, CommandHandler, JobQueue
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from datetime import time
 import pytz
 import os 
@@ -12,6 +12,10 @@ token = os.getenv('tlgtoken')
 # chat_ids = list(os.getenv('chats').split(','))
 # for chatId in  chat_ids:
 #   print(chatId)
+
+#async sen_msj(update, context):
+  
+  
 
 def truncated_msg(text):
     if len(text) >= 4000:
@@ -33,15 +37,24 @@ async def chatId(update,context):
     chatId = update.message.chat.id
     await update.message.reply_text(chatId)
     
-async def checking_vm(context):
-  vm = utils.check_vm()
-  if vm != None:
-    chat_ids = list(os.getenv('chats').split(','))
-    for chatId in  chat_ids:      
-      await context.bot.send_message(       
-        chat_id = chatId,
-        text = vm
+# async def checking_vm(context):
+#   vm = utils.check_vm()
+#   if vm != None:
+#     chat_ids = list(os.getenv('chats').split(','))
+#     for chatId in  chat_ids:      
+#       await context.bot.send_message(       
+#         chat_id = chatId,
+#         text = vm
+#       )
+      
+async def test_msj(update, context):
+  await context.bot.send_message(       
+        chat_id = '-751290326',
+        text = 'testing msg'
       )
+  
+async def msj(update, contect):
+  print(update)
     
 
 def main():
@@ -50,7 +63,9 @@ def main():
     logging.basicConfig(format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     application.add_handler(CommandHandler('chat_id', chatId))
     application.add_handler(CommandHandler('start', start))
-    application.job_queue.run_repeating(checking_vm, interval=900, first = time(hour=6, minute=50, second=0, tzinfo=pytz.timezone('US/Eastern')), last= time(hour=17, minute=00, second=0, tzinfo=pytz.timezone('US/Eastern')))
+    application.add_handler(CommandHandler('send', test_msj))
+    application.add_handler(MessageHandler(filters=filters.TEXT, callback= msj ))
+    # application.job_queue.run_repeating(checking_vm, interval=900, first = time(hour=6, minute=50, second=0, tzinfo=pytz.timezone('US/Eastern')), last= time(hour=17, minute=00, second=0, tzinfo=pytz.timezone('US/Eastern')))
     print('Bot started')
     application.run_polling()
     

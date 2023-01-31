@@ -4,7 +4,7 @@
 
 **DESCRIPTION:**
 
-This is a simple telegram bot with python to check the voice mail from a voip, connecting via ssh to the pbx, checking the voice mail, and report to the user by a message.
+This is a simple telegram bot with python to check the voice mail from a voip, connecting via ssh to the pbx, checking the voice mail, and report to the user by a message. it's using a data base to save the number of msg, and give 1 hour to check the voicemail
 
 **USAGE:**
 

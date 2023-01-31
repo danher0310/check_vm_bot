@@ -28,41 +28,68 @@ def check_vm():
   vmlist = searchs_vm()
   print(vmlist)
   vmlist = list(filter(is_audio,vmlist))
-  if len(vmlist) != 0:
-    msj = f"URGENT: Hi team we have {len(vmlist)} new message(s).\nPlease review them as soon as possible."
-    return msj
-  else:
-    return None
+  
+  if len(vmlist) != 0:  
+    msj = check_database(len(vmlist))    
+    return msj if msj!= None else None
+    
+      
+      
+    
+  #   msj = f"URGENT: Hi team we have {len(vmlist)} new message(s).\nPlease review them as soon as possible."
+  #   return msj
+  # else:
+  #   return None
   
  #------Function to work with DB in the future---------------
 
-# def connectDb():
-#   try:
-#     mydb = mysql.connector.connect(
-#       host = os.getenv('dbhost'),
-#       user = os.getenv('userdb'),
-#       password ='',
-#       database = os.getenv('dbname'),
-#       auth_plugin = "mysql_native_password"
-#     )
-#     return mydb
-#   except OSError:
-#     return OSError
+def connectDb():
+  try:
+    mydb = mysql.connector.connect(
+      host = os.getenv('dbhost'),
+      user = os.getenv('userdb'),
+      password ='',
+      database = os.getenv('dbname'),
+      auth_plugin = "mysql_native_password"
+    )
+    return mydb
+  except OSError:
+    return OSError
 
 
-# def not_in_the_list(x,list):
-#   return x not in list
+def not_in_the_list(x,list):
+  return x not in list
 
-# def check_database(vmlist):
-#   mydb = connectDb()
-#   myCursor = mydb.cursor()
-#   myCursor.execute("SELECT filename from voice_mail ;")
-#   vmsaved = [ x[0] for x in myCursor.fetchall()]
-#   vmnews = list(filter(lambda x: not_in_the_list(x,vmsaved), vmlist))
-#   for newvm in vmnews:
-#     querySQL = "INSERT INTO voice_mail (filename, dateregister) VALUES (%s, current_date());"
-#     myCursor.execute(querySQL, (newvm,))
-#     mydb.commit()
-#   return len(vmnews)
+def check_database(lenvm):
+  mydb = connectDb()
+   
+  
+  myCursor = mydb.cursor()
+  myCursor.execute("SELECT TIMESTAMPDIFF(hour, dateregister, current_timestamp())  as timediff from voice_mail where numberVm = %s  and (TIMESTAMPDIFF(hour, dateregister, current_timestamp()) >= 1 or  TIMESTAMPDIFF(hour, dateregister, current_timestamp()) <= 1) and TIMESTAMPDIFF(day, dateregister, current_timestamp()) <1   order by timediff ASC ;",(lenvm,))
+  result = myCursor.fetchone()    
+  if result == None:
+      scriptSQL = ("INSERT INTO voice_mail (numberVm) VALUES (%s) ")
+      value = lenvm
+      myCursor.execute(scriptSQL, (value,))
+      mydb.commit()
+      return f"URGENT: Hi team we have {lenvm} new message(s).\nPlease review them as soon as possible."   
+  else:
+    for x in result:
+      if str(x) != '0':
+        return f"URGENT: Hi team we have {lenvm} new message(s), it has {x} hour in the voicemail.\nPlease review them as soon as possible."
+      else:
+        return None
     
-     
+   
+  
+    
+  
+      
+    
+
+    
+  
+  
+  
+  
+print(check_vm(4))
