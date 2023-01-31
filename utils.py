@@ -26,7 +26,6 @@ def is_audio(msj):
 
 def check_vm():
   vmlist = searchs_vm()
-  print(vmlist)
   vmlist = list(filter(is_audio,vmlist))
   
   if len(vmlist) > 0:  
@@ -91,7 +90,8 @@ def check_database(lenvm):
 
   
       
-refreshDb()
+      
+
 
     
   
