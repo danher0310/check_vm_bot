@@ -44,7 +44,7 @@ def connectDb():
     mydb = mysql.connector.connect(
       host = os.getenv('dbhost'),
       user = os.getenv('userdb'),
-      password ='',
+      password =os.getenv('passdb'),
       database = os.getenv('dbname'),
       auth_plugin = "mysql_native_password"
     )
@@ -88,10 +88,10 @@ def check_database(lenvm):
     
    
   
-    
+
   
       
-    
+refreshDb()
 
     
   
