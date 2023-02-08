@@ -16,5 +16,6 @@ after that you need configure your .env file:
 
 1. Copy your token from botfather.
 2. Put your data for the SSH connection 
+3. Create your database and connect
 3. Run the code
 
